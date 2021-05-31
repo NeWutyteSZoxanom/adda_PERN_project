@@ -1,5 +1,5 @@
 const ApiError = require("../Error/ApiError");
-const { User } = require("../models/models");
+const { User, Chat } = require("../models/models");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
@@ -22,6 +22,7 @@ class UserController {
     const hashPass = await bcrypt.hash(password, 5);
     const user = await User.create({ email, password: hashPass, name });
     const token = generateJwt(user.id, user.email, user.name);
+    const chatroom = await Chat.create({ userId: user.id });
     return res.json({ token });
   }
 
@@ -41,6 +42,12 @@ class UserController {
 
   async check(req, res, next) {
     const token = generateJwt(req.user.id, req.user.email, req.user.role);
+    return req.jso({ token });
+  }
+  async updateProfile(req, res, next) {
+    const { img, name } = req.body;
+
+    //доделать
     return req.jso({ token });
   }
 }
